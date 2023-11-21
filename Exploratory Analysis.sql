@@ -1,14 +1,6 @@
-SELECT TOP (1000) [id]
-      ,[code]
-      ,[name]
-      ,[is_active]
-      ,[created_at]
-      ,[modified_at]
-  FROM [kpim_retail].[dbo].[region]
 
-  select * from [dbo].[sub_region]
 
--- câu 11
+-- Get a list of cities and provinces in the Northern region of Vietnam. There is information about domain name, domain code, area name, area code, after id, name, code of province/city.
 select 
 r.code as region_code,
 r.name as region_name,
@@ -23,7 +15,7 @@ join [dbo].[city] c on s.id = c.sub_region_id
 where r.code = 'MB'
 order by r.name, s.name, c.name
 
---câu 12
+-- Get a list of customers who are eligible to participate in the promotion following the opening of a new store in the North.
 select top(100) * from [dbo].[customer]
 select * from [dbo].[purchase_header]
 select top(1000) * from [dbo].[pos_sales_header]
@@ -41,7 +33,7 @@ group by c.id, c.code, c.full_name, c.first_name
 having sum(s.total_amount) > 10000000
 order by sum(s.total_amount) desc, c.first_name asc
 
---câu 13
+-- Every week, the lucky spin program will find 5 lucky orders and refund 50% for order not more than 1 million VND. The list of winning orders for the week from August 31, 2020 to September 6, 2020 are orders with the following document_code: SO-VMHNI4-202009034389708, SO-VMHNI109-202008316193214, SO-VMHNI51-202008316193066, SO-VMHNI64 -202008316193112, SO-VMHNI48-202009016193491. Retrieve order information, information of lucky customers and the amount of money the customer is refunded. The required information includes: order code, store code, store name, time of purchase, customer code, full name, customer name, order value, customer refund amount again.
 select * from [dbo].[store]
 select * from [dbo].[customer]
 select top 100 * from [dbo].[pos_sales_header]
@@ -54,7 +46,7 @@ join [dbo].[customer] c on p.customer_id = c.id
 where p.document_code in ('SO-VMHNI4-202009034389708', 'SO-VMHNI109-202008316193214', 'SO-VMHNI51-202008316193066', 'SO-VMHNI64-202008316193112', 'SO-VMHNI48-202009016193491')
 order by promotion_amount desc
 
---câu 14
+-- Summarize sales and average number of products purchased each time a customer buys the product “Cháo Yến Mạch, Chà Là Và Hồ Đào | Herritage Mill, Úc (320 G)” in 2020.
 select * from [dbo].[product_sku]
 select * from [dbo].[customer]
 select top 100 * from [dbo].[pos_sales_line]
@@ -68,9 +60,7 @@ group by s.product_sku_id, s.customer_id
 order by s.customer_id asc
 
 
---câu 15
---select * from [dbo].[product_category] p
---where p.product_category_id = 4 and p.product like '%Mì%'
+-- Get a list of the top 20 best-selling instant noodles products in 2019 and 2020. Consider products in the instant food group (sub_category_id=19) and the product name has the word "Mì" or the word "Mỳ" (spelling variation for 'noodle' in Vietnamese). Information returned includes year, product code, product name, country of origin, brand, selling price, quantity sold, sales rating by year. The returned list is sorted by year and by product rating.
 select top 100 * from [dbo].[pos_sales_line]
 
 select top 20 YEAR(s.transaction_date) as year, s.product_sku_id, p.code, p.name, p.country, p.brand, p.price, sum(s.quantity) as quantity,
@@ -79,7 +69,7 @@ join [dbo].[product_sku] p on s.product_sku_id = p.id
 where p.product_category_id = 4 and p.product like '%Mì%'
 group by s.product_sku_id, YEAR(s.transaction_date), s.product_sku_id, p.code, p.name, p.country, p.brand, p.price
 
---câu 16
+-- Query information about employees working the afternoon shift on June 13, 2020 at the store.
 select top 100 * from [dbo].[emp_shift_schedule]
 select top 100 * from [dbo].[sales_person]
 select top 100 * from [dbo].[store]
@@ -89,7 +79,7 @@ join [dbo].[sales_person] s on e.sales_person_id = s.id
 join [dbo].[store] st on e.store_id = st.id
 where e.day_work = '2021-06-13' and e.shift_name = N'Chiều' and st.address = N'Cụm 6, Xã Sen Chiểu, Huyện Phúc Thọ, Hà Nội'
 
---câu 17
+-- Query the average number of customers who come to buy at each store per day according to each time frame of the day. Sales data is limited to the last 6 months of 2020. Let's assume a staff to serve 8 customers/1 hour, and calculate how many employees each store needs at the peak time.
 select top 100 * from [dbo].[pos_sales_header];
 
 with store_hour as (
@@ -104,7 +94,7 @@ from store_hour
 group by id, code, name, hour
 order by id, code, name, hour asc;
 
---câu 18
+-- Currently, the chain is trading in 4 types of tea products: trà khô, trà túi lọc, trà hòa tan, trà chai (dried tea, filtered tea, instant tea, and bottled tea). Tea products have sub_category_id=27. Based on the product field can be classified into 4 product types 1, 2, 3, and 4. Calculate the ratio of sales of trà hòa tan to total sales of tea products in 2018, 2019, 2020
 select top 100 * from [dbo].[pos_sales_line]
 select * from [dbo].[product_sku]
 where product like N'%trà%'
@@ -142,7 +132,7 @@ from sum_by_p p
 join sum_by_y y on p.year = y.year
 where p.product_type_name = N'Trà hòa tan'
 
---câu 19
+-- Based on sales in 2020, classify products into 3 groups A, B, C (ABC Analysis). Sort products by sales descending. Product group A is the products that account for 70% of total revenue, product group B is the products that account for 20% of total revenue, and product group C is the products that account for the remaining 10% of revenue. Query a list of products categorized by ABC group. Sort by line code and product group code, sales descending.
 select top 100 * from [dbo].[pos_sales_line]
 order by unit_price desc -- p.transaction_date, p.line_amount 
 select * from [dbo].[product_category] -- c.id, c.name
@@ -176,9 +166,7 @@ order by cummulative_ratio asc
 
 
 
-
-
---câu 20
+-- Get the TOP 3 stores by sales in Hanoi to award the store of the month of October 2020. Know that stores in Hanoi have city_id=24.
 select top (3) s.id as store_id, s.code as store_code, s.name as store_name, sum(p.line_amount) as sales_amount_10_2022 from [dbo].[store] s
 join [dbo].[pos_sales_line] p on s.id = p.store_id
 join [dbo].[city] c on s.city_id = c.id 
