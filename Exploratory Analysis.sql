@@ -33,7 +33,11 @@ group by c.id, c.code, c.full_name, c.first_name
 having sum(s.total_amount) > 10000000
 order by sum(s.total_amount) desc, c.first_name asc
 
--- Every week, the lucky spin program will find 5 lucky orders and refund 50% for order not more than 1 million VND. The list of winning orders for the week from August 31, 2020 to September 6, 2020 are orders with the following document_code: SO-VMHNI4-202009034389708, SO-VMHNI109-202008316193214, SO-VMHNI51-202008316193066, SO-VMHNI64 -202008316193112, SO-VMHNI48-202009016193491. Retrieve order information, information of lucky customers and the amount of money the customer is refunded. The required information includes: order code, store code, store name, time of purchase, customer code, full name, customer name, order value, customer refund amount again.
+--Every week, the lucky spin program will find 5 lucky orders and refund 50% for order not more than 1 million VND.
+--The list of winning orders for the week from August 31, 2020 to September 6, 2020 are orders
+--with the following document_code: SO-VMHNI4-202009034389708, SO-VMHNI109-202008316193214, SO-VMHNI51-202008316193066, SO-VMHNI64 -202008316193112, SO-VMHNI48-202009016193491.
+--Retrieve order information, information of lucky customers and the amount of money the customer is refunded.
+--The required information includes: order code, store code, store name, time of purchase, customer code, full name, customer name, order value, customer refund amount again.
 select * from [dbo].[store]
 select * from [dbo].[customer]
 select top 100 * from [dbo].[pos_sales_header]
@@ -60,7 +64,10 @@ group by s.product_sku_id, s.customer_id
 order by s.customer_id asc
 
 
--- Get a list of the top 20 best-selling instant noodles products in 2019 and 2020. Consider products in the instant food group (sub_category_id=19) and the product name has the word "Mì" or the word "Mỳ" (spelling variation for 'noodle' in Vietnamese). Information returned includes year, product code, product name, country of origin, brand, selling price, quantity sold, sales rating by year. The returned list is sorted by year and by product rating.
+--Get a list of the top 20 best-selling instant noodles products in 2019 and 2020.
+--Consider products in the instant food group (sub_category_id=19) and the product name has the word "Mì" or the word "Mỳ" (spelling variation for 'noodle' in Vietnamese).
+--Information returned includes year, product code, product name, country of origin, brand, selling price, quantity sold, sales rating by year.
+--The returned list is sorted by year and by product rating.
 select top 100 * from [dbo].[pos_sales_line]
 
 select top 20 YEAR(s.transaction_date) as year, s.product_sku_id, p.code, p.name, p.country, p.brand, p.price, sum(s.quantity) as quantity,
@@ -79,7 +86,8 @@ join [dbo].[sales_person] s on e.sales_person_id = s.id
 join [dbo].[store] st on e.store_id = st.id
 where e.day_work = '2021-06-13' and e.shift_name = N'Chiều' and st.address = N'Cụm 6, Xã Sen Chiểu, Huyện Phúc Thọ, Hà Nội'
 
--- Query the average number of customers who come to buy at each store per day according to each time frame of the day. Sales data is limited to the last 6 months of 2020. Let's assume a staff to serve 8 customers/1 hour, and calculate how many employees each store needs at the peak time.
+-- Query the average number of customers who come to buy at each store per day according to each time frame of the day.
+--Sales data is limited to the last 6 months of 2020. Let's assume a staff to serve 8 customers/1 hour, and calculate how many employees each store needs at the peak time.
 select top 100 * from [dbo].[pos_sales_header];
 
 with store_hour as (
@@ -94,7 +102,9 @@ from store_hour
 group by id, code, name, hour
 order by id, code, name, hour asc;
 
--- Currently, the chain is trading in 4 types of tea products: trà khô, trà túi lọc, trà hòa tan, trà chai (dried tea, filtered tea, instant tea, and bottled tea). Tea products have sub_category_id=27. Based on the product field can be classified into 4 product types 1, 2, 3, and 4. Calculate the ratio of sales of trà hòa tan to total sales of tea products in 2018, 2019, 2020
+-- Currently, the chain is trading in 4 types of tea products: trà khô, trà túi lọc, trà hòa tan, trà chai (dried tea, filtered tea, instant tea, and bottled tea).
+--Tea products have sub_category_id=27. Based on the product field can be classified into 4 product types 1, 2, 3, and 4.
+--Calculate the ratio of sales of trà hòa tan to total sales of tea products in 2018, 2019, 2020
 select top 100 * from [dbo].[pos_sales_line]
 select * from [dbo].[product_sku]
 where product like N'%trà%'
@@ -132,7 +142,10 @@ from sum_by_p p
 join sum_by_y y on p.year = y.year
 where p.product_type_name = N'Trà hòa tan'
 
--- Based on sales in 2020, classify products into 3 groups A, B, C (ABC Analysis). Sort products by sales descending. Product group A is the products that account for 70% of total revenue, product group B is the products that account for 20% of total revenue, and product group C is the products that account for the remaining 10% of revenue. Query a list of products categorized by ABC group. Sort by line code and product group code, sales descending.
+-- Based on sales in 2020, classify products into 3 groups A, B, C (ABC Analysis).
+--Sort products by sales descending. Product group A is the products that account for 70% of total revenue, product group B is the products that account for 20% of total revenue,
+--and product group C is the products that account for the remaining 10% of revenue. Query a list of products categorized by ABC group.
+--Sort by line code and product group code, sales descending.
 select top 100 * from [dbo].[pos_sales_line]
 order by unit_price desc -- p.transaction_date, p.line_amount 
 select * from [dbo].[product_category] -- c.id, c.name
