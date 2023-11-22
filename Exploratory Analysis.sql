@@ -16,9 +16,6 @@ where r.code = 'MB'
 order by r.name, s.name, c.name
 
 -- Get a list of customers who are eligible to participate in the promotion following the opening of a new store in the North.
-select top(100) * from [dbo].[customer]
-select * from [dbo].[purchase_header]
-select top(1000) * from [dbo].[pos_sales_header]
 
 select c.id,
 c.code,
@@ -38,9 +35,6 @@ order by sum(s.total_amount) desc, c.first_name asc
 --with the following document_code: SO-VMHNI4-202009034389708, SO-VMHNI109-202008316193214, SO-VMHNI51-202008316193066, SO-VMHNI64 -202008316193112, SO-VMHNI48-202009016193491.
 --Retrieve order information, information of lucky customers and the amount of money the customer is refunded.
 --The required information includes: order code, store code, store name, time of purchase, customer code, full name, customer name, order value, customer refund amount again.
-select * from [dbo].[store]
-select * from [dbo].[customer]
-select top 100 * from [dbo].[pos_sales_header]
 
 select p.document_code, s.id, s.code, s.name, p.transaction_date, c.id, c.full_name, c.first_name, p.total_amount,
 (case when p.total_amount/2 > 1000000 then 1000000 else p.total_amount/2 end ) as promotion_amount
@@ -51,9 +45,6 @@ where p.document_code in ('SO-VMHNI4-202009034389708', 'SO-VMHNI109-202008316193
 order by promotion_amount desc
 
 -- Summarize sales and average number of products purchased each time a customer buys the product “Cháo Yến Mạch, Chà Là Và Hồ Đào | Herritage Mill, Úc (320 G)” in 2020.
-select * from [dbo].[product_sku]
-select * from [dbo].[customer]
-select top 100 * from [dbo].[pos_sales_line]
 
 select s.product_sku_id, s.customer_id, sum(s.line_amount) as purchase_amount, sum(s.quantity), count(*) as nb_purchases, 
 cast(sum(s.quantity)/cast(count(*) as decimal (18,2)) as decimal (18,2)) as avg from [dbo].[pos_sales_line] s
@@ -68,7 +59,6 @@ order by s.customer_id asc
 --Consider products in the instant food group (sub_category_id=19) and the product name has the word "Mì" or the word "Mỳ" (spelling variation for 'noodle' in Vietnamese).
 --Information returned includes year, product code, product name, country of origin, brand, selling price, quantity sold, sales rating by year.
 --The returned list is sorted by year and by product rating.
-select top 100 * from [dbo].[pos_sales_line]
 
 select top 20 YEAR(s.transaction_date) as year, s.product_sku_id, p.code, p.name, p.country, p.brand, p.price, sum(s.quantity) as quantity,
 dense_rank() over (order by sum(s.quantity) desc) as rk from [dbo].[pos_sales_line] s
@@ -77,9 +67,6 @@ where p.product_category_id = 4 and p.product like '%Mì%'
 group by s.product_sku_id, YEAR(s.transaction_date), s.product_sku_id, p.code, p.name, p.country, p.brand, p.price
 
 -- Query information about employees working the afternoon shift on June 13, 2020 at the store.
-select top 100 * from [dbo].[emp_shift_schedule]
-select top 100 * from [dbo].[sales_person]
-select top 100 * from [dbo].[store]
 
 select e.day_work, e.store_id, st.name, e.shift_name, s.code, s.full_name, s.first_name, s.gender from [dbo].[emp_shift_schedule] e
 join [dbo].[sales_person] s on e.sales_person_id = s.id
@@ -88,7 +75,6 @@ where e.day_work = '2021-06-13' and e.shift_name = N'Chiều' and st.address = N
 
 -- Query the average number of customers who come to buy at each store per day according to each time frame of the day.
 --Sales data is limited to the last 6 months of 2020. Let's assume a staff to serve 8 customers/1 hour, and calculate how many employees each store needs at the peak time.
-select top 100 * from [dbo].[pos_sales_header];
 
 with store_hour as (
   select s.id, s.code, s.name, DATEPART(HOUR, p.transaction_date) as hour, CAST(p.transaction_date  as date) as date, count(p.customer_id)*1.00 as count  
@@ -105,9 +91,6 @@ order by id, code, name, hour asc;
 -- Currently, the chain is trading in 4 types of tea products: trà khô, trà túi lọc, trà hòa tan, trà chai (dried tea, filtered tea, instant tea, and bottled tea).
 --Tea products have sub_category_id=27. Based on the product field can be classified into 4 product types 1, 2, 3, and 4.
 --Calculate the ratio of sales of trà hòa tan to total sales of tea products in 2018, 2019, 2020
-select top 100 * from [dbo].[pos_sales_line]
-select * from [dbo].[product_sku]
-where product like N'%trà%'
 
 with tea_category as (
   select YEAR(s.transaction_date) as year, p.id as id, SUM(s.line_amount) as sales_amount_tea,
